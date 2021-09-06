@@ -1,4 +1,5 @@
 .PlayerName{
-    font-size: larger;
+    font-size: medium;
     font-style: bold;
+    white-space: pre;
 }

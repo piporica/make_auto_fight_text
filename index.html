@@ -9,25 +9,38 @@
 <h1>테우르기아_자동전투</h1>
 <div id="Player">
     <div id="player1">
-        <span class = "PlayerName">P1 | </span> 
+        <span id='Player1Name' class = "PlayerName">P1 | </span> 
         공 : <input id="player1Atk" type="text" size=2> 
         방 : <input id="player1Def" type="text" size=2> 
         민 : <input id="player1Dex" type="text" size=2> 
         체 : <input id="player1Str" type="text" size=2> 
     </div> 
     <div id="Player2">   
-        <span class = "PlayerName">P2 | </span> 
+        <span id='Player2Name' class = "PlayerName">P2 | </span> 
         공 : <input id="player2Atk" type="text" size=2> 
         방 : <input id="player2Def" type="text" size=2> 
         민 : <input id="player2Dex" type="text" size=2> 
         체 : <input id="player2Str" type="text" size=2> 
     </div>
 </div> 
+<div id='charactor_select'>
+    <br>
+    <span class = "PlayerName">P1 | </span>  
+    <select id = 'P1Select' name="P1" onchange="P1selected()"> </select>
+    <br>
+    <br>
+    <span class = "PlayerName">P2 | </span> 
+    <select id = 'P2Select' name="P2" onchange="P2selected()"> </select>
+</div>
 <br>
-<button onclick="BattleStart()">fight start!</button>
+<div id="controler">
+    <button id="battle_play_btn" onclick="gameStart()">게임 시작!</button>
+    <button id="reset_btn" onclick="reset()">리셋</button>
+</div>
 
 <div id="fight"></div>
-<script src = "main.js"></script>
+<script src="stat.js" type="text/javascript"></script>
+<script src = "main.js" type="text/javascript"></script>
 
 </body>
 </html>
