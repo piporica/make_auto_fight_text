@@ -196,7 +196,7 @@ function playTurn(){
     //턴 플레이어가 공격, 상대가 방어      
     let damage = (Number(turnPlayer.atk) + ((Number(turnPlayer.str)-1)/2)) 
     damage = damage * getRandomInt(1,61)      
-    if(turnPlayer.HP < 30) damage = damage * 1.5
+    if(turnPlayer.HP <= 30) damage = damage * 1.5
 
     let defence = (Number(nextPlayer.def)*1.5 + ((Number(nextPlayer.dex)+1)/2))
     defence = defence * getRandomInt(1,41);
@@ -215,7 +215,8 @@ function playTurn(){
     let def_text = nextPlayer.name + "의 방어값 : " + defence;
     let rst1 = turnPlayer.name + "은/는 " + nextPlayer.name + "에게 " + (damage - defence) + "의 데미지를 주었다!"    
     let rst2 = nextPlayer.name + "은/는 공격을 완전히 방어했다!"
-    let hpRst = nextPlayer.name + "의 체력 : " + nextPlayer.HP;
+    //let hpRst = nextPlayer.name + "의 체력 : " + nextPlayer.HP;
+    let hpRst = nextPlayer.name + "의 상태 : " + selectSentence(nextPlayer.HP)
     let rst = defence >= damage ? rst2 : rst1
 
     atk_div.innerHTML = atk_text + '<br/>' + def_text + '<br/>' + rst + '<br/>' + hpRst;
@@ -232,6 +233,16 @@ function playTurn(){
         nextPlayer = temp;
     }
 
+}
+
+function selectSentence(hp) {
+    hp = Number(hp)
+    if(hp >= 200) return "건강함";
+    if(hp >= 150) return "어질어질함, 경상";
+    if(hp >= 70) return "무릎이 꺾임, 중상";
+    if(hp >= 30) return "무언가 잘못되었음을 느낌, 중상";    
+    if(hp > 0) return "눈 앞이 어두워지기 시작함, 빈사";
+    if(hp <= 0) return "기절";
 }
 
 function clearCheck(){
