@@ -35,6 +35,7 @@ function P1selected() {
     document.getElementById('player1Def').value = nowSelect.def
     document.getElementById('player1Dex').value = nowSelect.dex
     document.getElementById('player1Str').value = nowSelect.str
+    document.getElementById('player1HP').value = nowSelect.HP
 }
 
 function P2selected() {
@@ -46,8 +47,8 @@ function P2selected() {
     document.getElementById('player2Def').value = nowSelect.def
     document.getElementById('player2Dex').value = nowSelect.dex
     document.getElementById('player2Str').value = nowSelect.str
+    document.getElementById('player2HP').value = nowSelect.HP
 }
-
 
 
 function reset(){
@@ -74,21 +75,28 @@ function gameStart(){
 
 function PlayerSet(){
     
+    let selectbox1 = document.getElementById('P1Select')
+    let nowSelect = chDataArr[selectbox1.options.selectedIndex]
+
     P1 = {
-        name : "P1",
+        name : nowSelect.name ,
         atk : document.getElementById("player1Atk").value,
         def : document.getElementById("player1Def").value,
         dex : document.getElementById("player1Dex").value,
         str : document.getElementById("player1Str").value,
-        HP :  document.getElementById("player1Str").value * 80
+        HP :  document.getElementById("player1HP").value,
+        speed : 0 
     }
+    let selectbox2 = document.getElementById('P2Select')
+    let nowSelect2 = chDataArr[selectbox2.options.selectedIndex]
     P2 = {
-        name : "P2",
+        name : nowSelect2.name,
         atk : document.getElementById("player2Atk").value,
         def : document.getElementById("player2Def").value,
         dex : document.getElementById("player2Dex").value,
         str : document.getElementById("player2Str").value,        
-        HP :  document.getElementById("player2Str").value * 80
+        HP :  document.getElementById("player2HP").value,
+        speed : 0 
     }
 }
 
@@ -96,11 +104,6 @@ function BattleIsGoing(){
     turncount += 1;
     playTurn();
 
-    //턴 플레이어 변경
-    let temp = turnPlayer;
-    turnPlayer = nextPlayer;
-    nextPlayer = temp;
-    
     clearCheck();
 }
 
@@ -189,12 +192,22 @@ function playTurn(){
 
     // 공격처리
     let atk_div = document.createElement("div")
-    //턴 플레이어가 공격, 상대가 방어
-    let damage = turnPlayer.atk * getRandomInt(1,51);
-    let defence = nextPlayer.def * getRandomInt(1,31);
 
+    //턴 플레이어가 공격, 상대가 방어      
+    let damage = (Number(turnPlayer.atk) + ((Number(turnPlayer.str)-1)/2)) 
+    damage = damage * getRandomInt(1,61)      
+    if(turnPlayer.HP < 30) damage = damage * 1.5
+
+    let defence = (Number(nextPlayer.def)*1.5 + ((Number(nextPlayer.dex)+1)/2))
+    defence = defence * getRandomInt(1,41);
+    
     //체력감소
-    let rstDamage = defence >= damage ? 0 : damage - defence
+    
+    let rstDamage = damage - defence;
+    if(rstDamage < 0) {
+        rstDamage = 0;
+        nextPlayer.speed -= nextPlayer.dex;
+      }
     nextPlayer.HP -= rstDamage;
 
     //텍스트 출력    
@@ -210,6 +223,15 @@ function playTurn(){
     play_div.append(atk_div)
 
     fight_div.append(play_div);
+    
+    //턴 플레이어 변경
+    turnPlayer.speed += 8 - turnPlayer.dex;
+    if(nextPlayer.speed <= turnPlayer.speed){
+        let temp = turnPlayer;
+        turnPlayer = nextPlayer;
+        nextPlayer = temp;
+    }
+
 }
 
 function clearCheck(){

@@ -36,14 +36,18 @@ function reset(){
     while(Number(turnPL.HP * nextPL.HP) > 0){
       let damage = (Number(turnPL.atk) + ((Number(turnPL.str)-1)/2)) 
       damage = damage * getRandomInt(1,61)
-      let defence = (Number(nextPL.def)*2 + ((Number(nextPL.dex)+1)/2))
-      
+      if(turnPL.HP < 30) damage = damage * 1.5
+
+      let defence = (Number(nextPL.def)*1.5 + ((Number(nextPL.dex)+1)/2))
       defence = defence * getRandomInt(1,41);
 
       let rstDamage = damage - defence;
-      if(rstDamage < 0) rstDamage = 0;
+      if(rstDamage < 0) {
+        rstDamage = 0;
+        nextPL.speed -= nextPL.dex;
+      }
       nextPL.HP -= rstDamage;
-      turnPL.speed += 9 - turnPL.dex;
+      turnPL.speed += 8 - turnPL.dex;
       if(nextPL.speed < turnPL.speed){
         let temp = turnPL;
         turnPL = nextPL;
