@@ -1,14 +1,14 @@
-let count = 30;
+let count = 100;
 let chDataArr = [];
 setting();
 let fight_div = document.getElementById('fight');
 
 function  setting () {
   chDataArr = chData.stats;
-  chDataArr.forEach(P1 => {
-    P1.wins = 0;
-    P1.HP = P1.str * 120
-    P1.speed = 0;
+  chDataArr.forEach(P => {
+    P.wins = 0;
+    P.HP = P.str * 80
+    P.speed = 0;
   })
 }
 
@@ -34,16 +34,21 @@ function reset(){
     }
 
     while(Number(turnPL.HP * nextPL.HP) > 0){
-      let damage = ((turnPL.atk) + ((turnPL.str))) * getRandomInt(1,71)
-      let defence = (nextPL.def + (nextPL.dex) ) * getRandomInt(1,71);
+      let damage = (Number(turnPL.atk) + ((Number(turnPL.str)-1)/2)) 
+      damage = damage * getRandomInt(1,61)
+      let defence = (Number(nextPL.def)*2 + ((Number(nextPL.dex)+1)/2))
+      
+      defence = defence * getRandomInt(1,41);
+
       let rstDamage = damage - defence;
       if(rstDamage < 0) rstDamage = 0;
-      
       nextPL.HP -= rstDamage;
-
+      turnPL.speed += 9 - turnPL.dex;
+      if(nextPL.speed < turnPL.speed){
         let temp = turnPL;
         turnPL = nextPL;
         nextPL = temp;
+      }
     } 
 
     let winner = turnPL.HP > nextPL.HP ? turnPL : nextPL;
@@ -53,12 +58,10 @@ function reset(){
     }
     else P2.wins += 1;
     
-    P1.HP = P1.str * 120;
-    P2.HP = P2.str * 120;
+    P1.HP = P1.str * 80;
+    P2.HP = P2.str * 80;
     P1.speed = 0;
     P2.speed = 0;
-
-    console.log(P1.name, P2.name, winner.name)
   }
 
 function checkP1Turn(P1, P2){
@@ -88,7 +91,6 @@ function simulate(params) {
 var _promise = function (param) {
 
     return new Promise(function (resolve) {
-      
       chDataArr.forEach(P1 => {
         chDataArr.forEach(P2 =>{
           if(P1.name != P2.name)
@@ -98,6 +100,8 @@ var _promise = function (param) {
           }
         })
       });
+      
+     //fight(chDataArr[0], chDataArr[1])
       resolve("해결 완료");
     });
   };
