@@ -1,7 +1,9 @@
-let count = 100;
+let count = 500;
 let chDataArr = [];
 setting();
 let fight_div = document.getElementById('fight');
+let turn_sum = 0;
+let gamecount = 0;
 
 function  setting () {
   chDataArr = chData.stats;
@@ -9,6 +11,7 @@ function  setting () {
     P.wins = 0;
     P.HP = P.str * 80
     P.speed = 0;
+    P.avgturn = 0;
   })
 }
 
@@ -33,13 +36,24 @@ function reset(){
       nextPL = P1
     }
 
-    while(Number(turnPL.HP * nextPL.HP) > 0){
-      let damage = (Number(turnPL.atk) + ((Number(turnPL.str)-1)/2)) 
-      damage = damage * getRandomInt(1,61)
-      if(turnPL.HP < 30) damage = damage * 1.5
+    var now_turn = 0;
 
-      let defence = (Number(nextPL.def)*1.5 + ((Number(nextPL.dex)+1)/2))
-      defence = defence * getRandomInt(1,41);
+    var atkPlus = 0;
+    var defMinus = 0;
+
+    while(Number(turnPL.HP * nextPL.HP) > 0){
+      //공격보정치   
+      if(now_turn > 4){
+        atkPlus += 1.3;
+        defMinus -= 1.5;
+      }
+
+      let damage = (Number(turnPL.atk)* 1.2 + ((Number(turnPL.str)-1)/2)) + atkPlus
+      damage = damage * getRandomInt(1,51)
+      if(turnPL.HP < 50) damage = damage * 1.5
+
+      let defence = ((Number(nextPL.def) ) * 1.8 + ((Number(nextPL.dex)-1)/2)) + defMinus
+      defence = defence * getRandomInt(1,31);
 
       let rstDamage = damage - defence;
       if(rstDamage < 0) {
@@ -47,15 +61,19 @@ function reset(){
         nextPL.speed -= nextPL.dex;
       }
       nextPL.HP -= rstDamage;
-      turnPL.speed += 8 - turnPL.dex;
+      turnPL.speed += 8 - Number(turnPL.dex);
+   
       if(nextPL.speed < turnPL.speed){
         let temp = turnPL;
         turnPL = nextPL;
         nextPL = temp;
       }
+      now_turn += 1;
     } 
 
     let winner = turnPL.HP > nextPL.HP ? turnPL : nextPL;
+    turn_sum += now_turn;
+    gamecount += 1;
     
     if(winner.name == P1.name) {
       P1.wins += 1;
@@ -66,6 +84,8 @@ function reset(){
     P2.HP = P2.str * 80;
     P1.speed = 0;
     P2.speed = 0;
+
+    return now_turn;
   }
 
 function checkP1Turn(P1, P2){
@@ -95,17 +115,21 @@ function simulate(params) {
 var _promise = function (param) {
 
     return new Promise(function (resolve) {
+      
       chDataArr.forEach(P1 => {
+        var p_turnsum = 0;
         chDataArr.forEach(P2 =>{
-          if(P1.name != P2.name)
-          for(let i = 0; i < count ; i++)
-          {
-            fight(P1, P2);
+          if(P1.name != P2.name){
+            for(let i = 0; i < count ; i++)
+            {
+              p_turnsum += fight(P1, P2);
+            }
           }
         })
+        P1.avgturn = p_turnsum/((count-1) * chDataArr.length);
       });
       
-     //fight(chDataArr[0], chDataArr[1])
+     fight(chDataArr[0], chDataArr[1])
       resolve("해결 완료");
     });
   };
@@ -124,7 +148,10 @@ function showRst () {
   chDataArr.forEach(PL => {  
     let rst = ""
     rst += (PL.name).padEnd(17, ' ') 
-    +'/'+ PL.atk +'/' + PL.def +'/'+ PL.dex +'/'+ PL.str +'/'+ PL.wins + '<br/>'
+    +'/'+ PL.atk +'/' + PL.def +'/'+ PL.dex +'/'+ PL.str +'/'+ PL.wins + '/' + Math.round(PL.avgturn) + '<br/>'
     fight_div.innerHTML += rst; 
   })
+
+  let avgturn = turn_sum/gamecount; 
+  fight_div.prepend("평균 턴수 : " + Math.round(avgturn) + "\n")
 }

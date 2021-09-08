@@ -6,6 +6,8 @@ let P1 = {};
 let P2 = {};
 let fight_div = document.getElementById("fight")
 let chDataArr
+let atkPlus;
+let defMinus;
 
 init();
 
@@ -53,9 +55,15 @@ function P2selected() {
 
 function reset(){
     turncount = 0;
+    atkPlus = 0;
+    defMinus = 0;
+
     setStatEnable(true);
     setPlayBtnEnable(true);
     
+    let btn = document.getElementById('battle_play_btn')
+    btn.innerText = "게임 시작";
+
     while(fight_div.hasChildNodes()){
         fight_div.removeChild(fight_div.firstChild); 
     }
@@ -65,7 +73,6 @@ function gameStart(){
     if(turncount == 0){
         let btn = document.getElementById('battle_play_btn')
         btn.innerText = "턴 진행";
-
         BattleStart();
     }
     else{
@@ -103,7 +110,6 @@ function PlayerSet(){
 function BattleIsGoing(){
     turncount += 1;
     playTurn();
-
     clearCheck();
 }
 
@@ -193,27 +199,32 @@ function playTurn(){
     // 공격처리
     let atk_div = document.createElement("div")
 
-    //턴 플레이어가 공격, 상대가 방어      
-    let damage = (Number(turnPlayer.atk) + ((Number(turnPlayer.str)-1)/2)) 
-    damage = damage * getRandomInt(1,61)      
-    if(turnPlayer.HP <= 30) damage = damage * 1.5
+    //공격/방어 추가값 계산
+    if(turncount > 4){
+        atkPlus += 1.3;
+        defMinus -= 1.5;
+    }
 
-    let defence = (Number(nextPlayer.def)*1.5 + ((Number(nextPlayer.dex)+1)/2))
-    defence = defence * getRandomInt(1,41);
+    //턴 플레이어가 공격, 상대가 방어      
+    let damage = (Number(turnPlayer.atk) * 1.2 + ((Number(turnPlayer.str)-1)/2)) + atkPlus
+    damage = damage * getRandomInt(1,51)      
+    if(turnPlayer.HP <= 50) damage = damage * 1.5
+
+    let defence = (Number(nextPlayer.def - defMinus) * 1.8  + ((Number(nextPlayer.dex)-1)/2))+ defMinus
+    defence = defence * getRandomInt(1,31);
     
     //체력감소
-    
     let rstDamage = damage - defence;
     if(rstDamage < 0) {
         rstDamage = 0;
-        nextPlayer.speed -= nextPlayer.dex;
+        nextPlayer.speed -= (nextPlayer.dex);
       }
     nextPlayer.HP -= rstDamage;
 
     //텍스트 출력    
-    let atk_text = turnPlayer.name + "의 데미지 : " + damage;
-    let def_text = nextPlayer.name + "의 방어값 : " + defence;
-    let rst1 = turnPlayer.name + "은/는 " + nextPlayer.name + "에게 " + (damage - defence) + "의 데미지를 주었다!"    
+    let atk_text = turnPlayer.name + "의 데미지 : " + Math.round(damage);
+    let def_text = nextPlayer.name + "의 방어값 : " + Math.round(defence);
+    let rst1 = turnPlayer.name + "은/는 " + nextPlayer.name + "에게 " + Math.round((damage - defence)) + "의 데미지를 주었다!"    
     let rst2 = nextPlayer.name + "은/는 공격을 완전히 방어했다!"
     //let hpRst = nextPlayer.name + "의 체력 : " + nextPlayer.HP;
     let hpRst = nextPlayer.name + "의 상태 : " + selectSentence(nextPlayer.HP)
@@ -222,8 +233,8 @@ function playTurn(){
     atk_div.innerHTML = atk_text + '<br/>' + def_text + '<br/>' + rst + '<br/>' + hpRst;
     play_div.append(nowTurn)
     play_div.append(atk_div)
-
     fight_div.append(play_div);
+    
     
     //턴 플레이어 변경
     turnPlayer.speed += 8 - turnPlayer.dex;
@@ -232,6 +243,13 @@ function playTurn(){
         turnPlayer = nextPlayer;
         nextPlayer = temp;
     }
+    showHp();
+}
+
+function showHp() {
+    let div = document.getElementById("HPshow");
+    div.innerHTML = P1.name + "의 체력 : " + Math.round(P1.HP) +'<br/>' 
+                    + P2.name + "의 체력 : "+ Math.round(P2.HP)
 
 }
 
@@ -271,9 +289,11 @@ function setStatEnable(isEnable) {
     document.getElementById("player1Def").disabled = !isEnable;
     document.getElementById("player1Dex").disabled = !isEnable;
     document.getElementById("player1Str").disabled = !isEnable;
+    document.getElementById("P1Select").disabled = !isEnable;
 
     document.getElementById("player2Atk").disabled = !isEnable;
     document.getElementById("player2Def").disabled = !isEnable;
     document.getElementById("player2Dex").disabled = !isEnable;
     document.getElementById("player2Str").disabled = !isEnable;
+    document.getElementById("P2Select").disabled = !isEnable;
 }
