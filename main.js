@@ -52,6 +52,13 @@ function P2selected() {
     document.getElementById('player2HP').value = nowSelect.HP
 }
 
+function auto() {
+    reset()
+    BattleStart()
+    while(!clearCheck()){
+        BattleIsGoing()
+    }    
+}
 
 function reset(){
     turncount = 0;
@@ -230,7 +237,7 @@ function playTurn(){
     let hpRst = nextPlayer.name + "의 상태 : " + selectSentence(nextPlayer.HP)
     let rst = defence >= damage ? rst2 : rst1
 
-    atk_div.innerHTML = atk_text + '<br/>' + def_text + '<br/>' + rst + '<br/>' + hpRst;
+    atk_div.innerHTML = rst + '<br/>' + hpRst;
     play_div.append(nowTurn)
     play_div.append(atk_div)
     fight_div.append(play_div);
@@ -260,7 +267,7 @@ function selectSentence(hp) {
     if(hp >= 70) return "무릎이 꺾임, 중상";
     if(hp >= 30) return "무언가 잘못되었음을 느낌, 중상";    
     if(hp > 0) return "눈 앞이 어두워지기 시작함, 빈사";
-    if(hp <= 0) return "기절";
+    if(hp <= 0) return "사망";
 }
 
 function clearCheck(){
